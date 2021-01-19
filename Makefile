@@ -2,7 +2,7 @@ OUT_PATH :=
 OUT_WORKER := cli_worker_linux
 OUT_HTTPD:= cli_httpd_linux
 OUT_PREPROCESSOR := cli_preprocessor_linux
-PKG := github.com/xf0e/open-ocr
+PKG := github.com/ublast/open-ocr
 VERSION := $(shell git describe --tags|sed -e "s/\-/\./g")
 SHA1VER := $(shell git rev-parse HEAD)
 DATE := $(shell date +'%Y-%m-%d_%T')
@@ -12,16 +12,16 @@ GO_FILES := $(shell find . -name 'main.go' | grep -v /vendor/)
 all: run
 
 release:
-	@go build -o ${OUT_WORKER} -buildmode=pie -a -tags netgo -trimpath -ldflags="-s -w -X 'github.com/xf0e/open-ocr.buildTime=${DATE}' \
-	 -X 'github.com/xf0e/open-ocr.sha1ver=${SHA1VER}' -X 'github.com/xf0e/open-ocr.version=${VERSION}'" cli-worker/main.go
+	@go build -o ${OUT_WORKER} -buildmode=pie -a -tags netgo -trimpath -ldflags="-s -w -X 'github.com/ublast/open-ocr.buildTime=${DATE}' \
+	 -X 'github.com/ublast/open-ocr.sha1ver=${SHA1VER}' -X 'github.com/ublast/open-ocr.version=${VERSION}'" cli-worker/main.go
 	@go build -o ${OUT_HTTPD} -buildmode=pie -a -tags netgo -trimpath -ldflags="-s -w -X main.buildTime=${DATE} \
-	 -X main.sha1ver=${SHA1VER} -X main.version=${VERSION} -X 'github.com/xf0e/open-ocr.version=${VERSION}'" cli-httpd/main.go
+	 -X main.sha1ver=${SHA1VER} -X main.version=${VERSION} -X 'github.com/ublast/open-ocr.version=${VERSION}'" cli-httpd/main.go
 	@go build -o ${OUT_PREPROCESSOR} -buildmode=pie -a -tags netgo -trimpath -ldflags="-s -w -X main.buildTime=${DATE} \
 	 -X main.sha1ver=${SHA1VER} -X main.version=${VERSION}" cli-preprocessor/main.go
 
 debug:
-	@go build -o ${OUT_WORKER} -buildmode=pie -a -tags netgo -ldflags="-w -X github.com/xf0e/open-ocr.buildTime=${DATE} \
-	 -X github.com/xf0e/open-ocr.sha1ver=${SHA1VER} -X github.com/xf0e/open-ocr.version=${VERSION}" cli-worker/main.go
+	@go build -o ${OUT_WORKER} -buildmode=pie -a -tags netgo -ldflags="-w -X github.com/ublast/open-ocr.buildTime=${DATE} \
+	 -X github.com/ublast/open-ocr.sha1ver=${SHA1VER} -X github.com/ublast/open-ocr.version=${VERSION}" cli-worker/main.go
 	@go build -o ${OUT_HTTPD} -buildmode=pie -a -tags netgo -ldflags="-w -X main.buildTime=${DATE} \
 	 -X main.sha1ver=${SHA1VER} -X main.version=${VERSION}" cli-httpd/main.go
 	@go build -o ${OUT_PREPROCESSOR} -buildmode=pie -a -tags netgo -ldflags="-w -X main.buildTime=${DATE} \

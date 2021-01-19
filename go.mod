@@ -1,4 +1,4 @@
-module github.com/xf0e/open-ocr
+module github.com/ublast/open-ocr
 
 go 1.15
 

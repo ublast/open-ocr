@@ -190,8 +190,8 @@ pre {
 <p class="title">info</p>
 <div class="lists">
   <ul class="nes-list is-circle">
-    <li><p>Need <a href="https://godoc.org/github.com/xf0e/open-ocr">docs</a>?</p></li>
-    <li><p> <a href="https://github.com/xf0e/open-ocr">repository</a></p></li>
+    <li><p>Need <a href="https://godoc.org/github.com/ublast/open-ocr">docs</a>?</p></li>
+    <li><p> <a href="https://github.com/ublast/open-ocr">repository</a></p></li>
 	<li><p>written as DDD process (russian: Davai Davai Deploy)</p></li>
   </ul>
 </div>
