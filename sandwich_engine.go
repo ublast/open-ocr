@@ -179,15 +179,15 @@ func (t *SandwichEngineArgs) Export() []string {
 	if t.psm != "" {
 		tesso = tesso + "--psm " + t.psm + " "
 	}
-	tesso = "\"" + tesso + "-c textonly_pdf=1" + "\""
+	tesso = tesso + "-c textonly_pdf=1"
 	result = append(result, "-tesso", tesso)
 
 	if t.unpo != "" {
-		result = append(result, "-unpo", "\"" + t.unpo + "\"")
+		result = append(result, "-unpo", t.unpo)
 	}
 
 	if t.coo != "" {
-		result = append(result, "-coo", "\"" + t.coo + "\"")
+		result = append(result, "-coo", t.coo)
 	}
 
 	if t.grayfilterEn == true {
