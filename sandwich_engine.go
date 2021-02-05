@@ -28,6 +28,11 @@ type SandwichEngineArgs struct {
 	lang         string            `json:"lang"`
 	ocrType      string            `json:"ocr_type"`
 	ocrOptimize  bool              `json:"result_optimize"`
+	psm          string            `json:"psm"`
+	unpaperDis   bool              `json:"disable_unpaper"`
+	unpo         string            `json:"unpo"`
+	coo          string            `json:"coo"`
+	grayfilterEn bool              `json:"enable_grayfilter"`
 	saveFiles    bool
 	t2pConverter string
 	requestID    string
@@ -102,6 +107,58 @@ func NewSandwichEngineArgs(ocrRequest *OcrRequest, workerConfig *WorkerConfig) (
 	engineArgs.saveFiles = workerConfig.SaveFiles
 	engineArgs.t2pConverter = workerConfig.Tiff2pdfConverter
 
+	// psm
+	psm := ocrRequest.EngineArgs["psm"]
+	if psm != nil {
+		psmStr, ok := psm.(string)
+		if !ok {
+			return nil, fmt.Errorf("could not convert psm into string: %v", psm)
+		}
+		engineArgs.psm = psmStr
+	}
+
+	// unpo
+	unpo := ocrRequest.EngineArgs["unpo"]
+	if unpo != nil {
+		unpoStr, ok := unpo.(string)
+		if !ok {
+			return nil, fmt.Errorf("could not convert unpo into string: %v", unpo)
+		}
+		engineArgs.unpo = unpoStr
+	}
+
+	// coo
+	coo := ocrRequest.EngineArgs["coo"]
+	if coo != nil {
+		cooStr, ok := coo.(string)
+		if !ok {
+			return nil, fmt.Errorf("could not convert coo into string: %v", coo)
+		}
+		engineArgs.coo = cooStr
+	}
+
+	// disable unpaper, default: false (unpaper is enabled)
+	unpaperDis := ocrRequest.EngineArgs["disable_unpaper"]
+	engineArgs.unpaperDis = false
+	if unpaperDis != nil {
+		unpaperDisFlag, ok := unpaperDis.(bool)
+		if !(ok) {
+			return nil, fmt.Errorf("could not convert into boolean: %v", unpaperDis)
+		}
+		engineArgs.unpaperDis = unpaperDisFlag
+	}
+
+	// enable grayfilter, default: false (grayfilter is disabled)
+	grayfilterEn := ocrRequest.EngineArgs["enable_grayfilter"]
+	engineArgs.grayfilterEn = false
+	if grayfilterEn != nil {
+		grayfilterEnFlag, ok := grayfilterEn.(bool)
+		if !(ok) {
+			return nil, fmt.Errorf("could not convert into boolean: %v", grayfilterEn)
+		}
+		engineArgs.grayfilterEn = grayfilterEnFlag
+	}
+
 	return engineArgs, nil
 
 }
@@ -110,11 +167,37 @@ func NewSandwichEngineArgs(ocrRequest *OcrRequest, workerConfig *WorkerConfig) (
 // args, eg, ["-c", "tessedit_char_whitelist=0123456789", "-c", "foo=bar"]
 func (t *SandwichEngineArgs) Export() []string {
 	var result []string
+	var tesso string
+
+
 	if t.lang != "" {
 		result = append(result, "-lang", t.lang)
 	}
 	// pdfsandwich wants the quotes before -c an after the last key e.g. -tesso '"-c arg1=key1"'
-	result = append(result, "-tesso", "-c textonly_pdf=1")
+	//result = append(result, "-tesso", "-c textonly_pdf=1")
+	tesso = ""
+	if t.psm != "" {
+		tesso = tesso + "--psm " + t.psm + " "
+	}
+	tesso = "\"" + tesso + "-c textonly_pdf=1" + "\""
+	result = append(result, "-tesso", tesso)
+
+	if t.unpo != "" {
+		result = append(result, "-unpo", "\"" + t.unpo + "\"")
+	}
+
+	if t.coo != "" {
+		result = append(result, "-coo", "\"" + t.coo + "\"")
+	}
+
+	if t.grayfilterEn == true {
+		result = append(result, "-grayfilter")
+	}
+
+	if t.unpaperDis == true {
+		result = append(result, "-nopreproc")
+	}
+
 	if t.configVars != nil {
 		for k, v := range t.configVars {
 			keyValArg := fmt.Sprintf("%s=%s", k, v)
